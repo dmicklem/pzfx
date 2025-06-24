@@ -470,7 +470,7 @@ decimal_helper <- function(v, n_digits) {
   return("2")
 }
 
-
+#Examples for testing
 firstNotes<-data.frame(
   Name = c("Experiment Date", "Experiment ID", "Notebook ID", "Project", "Experimenter", "Protocol", "DRM_custom_constant","Notes","Notes"),
   Value= c("2025-06-19", "DRM_experimentID", "DRM_NotebookID","DRM_ProjectID", "DRM_Experimenter", "DRM_Protocol", "DRM_custom_constant_value", "This is an extended","bit of notes"),
@@ -504,9 +504,8 @@ myData2<-data.frame(
   th_2=c(2,4,8,16,32,64,128,256)
 )
 listDfs<-list(myData,myData2)
-
 names(listDfs)<-c("Powersof2","AnotherSimpler")
 mypath<-'/Users/david.micklem/Desktop/Testpzfx.pzfx'
-write_pzfx(myData, mypath, row_names=FALSE, x_col=1, notes=listNotes)
+write_pzfx(listDfs, mypath, row_names=FALSE, x_col=c(1,0), x_err=c(2,0), notes=listNotes, subcolumns=c(3,2), subcolumn_suffix="_\\d+$",n_digits=2)
 
 
