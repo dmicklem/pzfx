@@ -255,6 +255,7 @@ table_lst <- function(x_lst, row_names, x_col, x_err, n_digits, subcolumns, subc
       y_format="SDN"
       this_subcols<-3
     }
+    xcols<-list()
     if (!(this_xcol ==0)) {
       if (this_xerr ==0) {
         #One xcol so a normal XY table
