@@ -340,10 +340,8 @@ info_lst <- function(x_lst) {
 
   ret <- lapply(seq_len(length(x_lst)), function(i) {
     this_df <- x_lst[[i]]
-    notes_row <- this_df %>%
-      filter(Name == "Notes")
-    constant_data <- this_df %>%
-      filter(Name != "Notes")
+    notes_row <- this_df[this_df$Name == "Notes", ]
+    constant_data <- this_df[this_df$Name != "Notes", ]
     if (nrow(notes_row) > 0) {
       note_values <- notes_row$Value
       # Construct the R list structure for the <Notes> block
