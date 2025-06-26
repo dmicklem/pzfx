@@ -1,7 +1,10 @@
 #' Write one table or multiple tables to a 'GraphPad Prism' '.pzfx' file
 #'
 #' Write one table or multiple tables to a 'GraphPad Prism' '.pzfx' file. A table can be a 'matrix',
-#'   a 'data.frame', or a 'tibble'. All elements of the table should be numeric.
+#'   a 'data.frame', or a 'tibble'. All elements of the table should be numeric
+#'   DRM: Prism doesn't actually care if the elements are not numeric. It will just ignore any non-numeric values.
+#'   Use this to allow flagging of excluded values. An entry ending with an asterisk will be interpreted as exclude.
+#'
 #'
 #' DRM Add the possibility to add one or more Notes tables. The table is a set of constant, value pairs.
 #'   The 'Notes' constant will be treated separately.
@@ -71,11 +74,11 @@ write_pzfx <- function(x, path, row_names=TRUE, x_col=NA,x_err=NA, n_digits=NA, 
   # make sure all elements are numeric
   are_nums <- sapply(x_lst, function(x) all(sapply(x, is.numeric)))
   if (any(!are_nums)) {
-    stop(paste0("These tables are not all numeric: ",
+    warning(paste0("These tables are not all numeric: ",
                 paste(names(x_lst)[!are_nums], collapse=", "),
-                ". Such tables are not supported by Prism GraphPad. ",
+                ". Non-numeric values will be ignored by GraphPad Prism. ",
                 "You may want to spread / pivot the input data by non-numeric columns into a 'wide' format, ",
-                "where the table elements are all numeric."
+                "where the table elements are all numeric. Note that trailing asterisks are interpreted as flags to exlude the data"
     ))
   }
   # make sure row_names matches the length of x_lst
@@ -450,7 +453,14 @@ return(ret)
 
 subcol_helper <- function(v) {
   v <- as.vector(v)
-  lapply(v, function(e) list("d"=list(as.character(e))))
+  lapply(v, function(e) {
+    e<-as.character(e)
+    if (!is.na(e) && endsWith(e, "*")) {
+      e<-sub("\\*$","",e)
+      list("d"=structure(list(e),Excluded="1"))
+    }
+    else {list("d"=list(e))}
+  })
 }
 decimal_helper <- function(v, n_digits) {
   n_digits <- round(n_digits)
@@ -487,9 +497,9 @@ listNotes<-list(firstNotes, secondNotes)
 names(listNotes)<-c("Project Info 1", "A Global Note")
 
 myData<-data.frame(
-  Time = c(1,2,3,4,5,6,7,8),
+  Time = c(1,"2*",3,4,5,6,7,8),
   Time_error = c(0.1,0.1,0.1,0.2,0.1,0.1,0.1,0.1),
-  Measurement_1 = c(2,4,8,16,32,64,128,256),
+  Measurement_1 = c("Oh no",4,8,16,32,64,"128*",256),
   Measurement_2 = c(12,14,18,116,132,164,1128,1256),
   Measurement_3 = c(22,24,28,216,232,264,2128,2256),
   Other_1=c(2,4,8,16,32,64,128,256)
