@@ -455,6 +455,9 @@ subcol_helper <- function(v) {
   v <- as.vector(v)
   lapply(v, function(e) {
     e<-as.character(e)
+    if (is.na(e)) {
+      return(list("d" = list(NA_character_))) # Return NA if the original was NA
+    }
     if (endsWith(e, "*")) {
       e<-sub("\\*$","",e)
       list("d"=structure(list(e),Excluded="1"))
